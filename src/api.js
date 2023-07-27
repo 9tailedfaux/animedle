@@ -1,13 +1,17 @@
 export async function getEntireList(username) {
-    const mediaList = []
+    let mediaList = []
     let data = await getNthPageOfList(username, 1)
     let hasNext = data.data.Page.pageInfo.hasNextPage
     let index = 2
+    mediaList.push(...data.data.Page.mediaList)
     while (hasNext) {
-        mediaList.push(...data.data.Page.mediaList)
         data = await getNthPageOfList(username, index++)
+        mediaList.push(...data.data.Page.mediaList)
         hasNext = data.data.Page.pageInfo.hasNextPage
     }
+    /*mediaList = mediaList.filter((media) => {
+        return media.media.status !== "NOT_YET_RELEASED"
+    })*/
     console.log(mediaList)
     return mediaList
 }
@@ -43,7 +47,8 @@ query ($page: Int, $username: String) {
         mediaList(
           userName: $username, 
           type: ANIME, 
-          sort: SCORE_DESC
+          sort: SCORE_DESC,
+          status: COMPLETED
         ) {
           media {
             title {
