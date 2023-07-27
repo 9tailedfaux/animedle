@@ -2,9 +2,13 @@ import logo from './logo.svg';
 import './App.css';
 import {useEffect, useState} from "react";
 import {getEntireList} from './api'
+import Autocomplete from './Autocomplete'
 
 function App() {
   const [listFetched, setListFetched] = useState(false)
+  const [chosenMedia, setChosenMedia] = useState({})
+  const [prefix, setPrefix] = useState("");
+  const [suggestion, setSuggestion] = useState("");
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -13,37 +17,37 @@ function App() {
     const formJson = Object.fromEntries(formData.entries())
     const username = formJson.username
     getEntireList(username)
-        .then(() => {
+        .then((list) => {
+          const chosen = list.at(Math.floor(Math.random() * list.length))
+          setChosenMedia(chosen)
+          console.log(chosen)
           setListFetched(true)
         })
+  }
+
+  function handleSearchChange(e) {
+    let value = e.target.value
+    setPrefix(value)
+
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         {
           !listFetched && <form onSubmit={handleSubmit}>
             <input type={"text"} title={"Anilist username"} name={"username"}/>
-            <input type={"submit"} name={"Let's go!"} />
+            <input type={"submit"} title={"Let's go!"} />
           </form>
         }
-
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {
+          !listFetched && <div>
+              <Autocomplete/>
+          </div>
+        }
       </header>
     </div>
   );
-}
-
-function fetchAnime(user) {
-  
 }
 
 export default App;

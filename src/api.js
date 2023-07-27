@@ -16,6 +16,15 @@ export async function getEntireList(username) {
     return mediaList
 }
 
+export async function getSearchResults(page, searchString){
+    const variables = {
+        page: page,
+        searchString: searchString
+    }
+    const response = await request(searchQuery, variables)
+    return await response.json()
+}
+
 async function getNthPageOfList(username, page){
     const variables = {
         page: page,
@@ -40,6 +49,23 @@ async function request(query, variables) {
         };
     return fetch(url, options)
 }
+
+const searchQuery = `
+query ($page: Int, $searchString: String) {
+  Page(page: $page, perPage: 5) {
+    media(search: $searchString, type: ANIME) {
+      title {
+        romaji
+        english
+        native
+        userPreferred
+      }
+      id
+    }
+  }
+}
+
+`
 
 const nthPageQuery = `
 query ($page: Int, $username: String) {
